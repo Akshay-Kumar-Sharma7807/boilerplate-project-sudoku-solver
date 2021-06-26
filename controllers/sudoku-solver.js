@@ -29,6 +29,13 @@ class SudokuSolver {
     console.log("testArray", testArray);
     console.log("rowarray", rowArray);
     console.log("blockArray", blockArray);
+    blockArray.map((value, index) => {
+      if (index % 3 === 0 && index !== 0) {
+        blockArray.push(rowArray);
+        rowArray = [];
+      }
+      rowArray.push(value);
+    });
   }
 
   checkColPlacement(puzzleString, row, column, value) {}

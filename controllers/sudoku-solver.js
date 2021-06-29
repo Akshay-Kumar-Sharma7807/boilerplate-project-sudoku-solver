@@ -13,36 +13,7 @@ class SudokuSolver {
     }
   }
 
-  checkRowPlacement(puzzleString, row, column, value, coordinate) {
-    // var puzzleArray = puzzleString.split("");
-    // var blockArray = [];
-    // var rowArray = [];
-    // puzzleArray.map((value, index) => {
-    //   if (index % 3 === 0 && index !== 0) {
-    //     blockArray.push(rowArray);
-    //     rowArray = [];
-    //   }
-    //   rowArray.push(value);
-    // });
-    // blockArray.push(rowArray);
-
-    // console.log("puzzleArray", puzzleArray);
-    // console.log("blockArray", blockArray);
-    // blockArray.map((value, index) => {
-    //   if (index % 3 === 0 && index !== 0) {
-    //     blockArray.push(rowArray);
-    //     rowArray = [];
-    //   }
-    //   rowArray.push(value);
-    // });
-
-    // let columncoordinate = coordinate.charCodeAt(0) - 64;
-    // let rowcoordinate = coordinate[1];
-    // let regioncoordinate = Math.ceil(rowcoordinate / 3);
-    // console.log(regioncoordinate);
-    // let colregioncoordinate = Math.ceil(columncoordinate / 3);
-    // console.log(colregioncoordinate);
-    // for(var i = regioncoordinate===1?1:regioncoordinate+2)
+  checkRowPlacement(puzzleString, row, column, value) {
     // ----------------------------------------
     var rowIndex = row.indexOf(value);
     if (rowIndex === -1) {
@@ -81,31 +52,67 @@ class SudokuSolver {
     }
     return isNotFound;
   }
-
-  solve(rowArray) {
-    console.log(rowArray);
-    rowArray.map((row, rowIndex) => {
-      row.map((value, index) => {
+  contains(array) {
+    array.map((row) => {
+      row.map((value) => {
         if (value === ".") {
-          var columnArray = [];
-          rowArray.map((valuer) => {
-            columnArray.push(valuer[index]);
-          });
-          // console.log("columnarray", columnArray);
-          for (var i = 1; i < 10; i++) {
-            if (
-              this.checkColPlacement("ks", "row", columnArray, i + "") &&
-              this.checkRowPlacement("kfsf", row, columnArray, i + "") &&
-              this.checkRegionPlacement(rowArray, rowIndex, index, i + "")
-            ) {
-              // console.log(i);
-              row[index] = i + "";
-              break;
-            }
-          }
+          return true;
         }
       });
     });
+    return false;
+  }
+  solve(rowArray) {
+    var stillDot = () => {
+      let result = false;
+      rowArray.map((row, rowIndex) => {
+        row.map((value, index) => {
+          if (value === ".") {
+            result = true;
+          }
+        });
+      });
+      return result;
+    };
+    // console.log(rowArray);
+    var count = 0;
+    while (stillDot() && count < 100) {
+      count++;
+      rowArray.map((row, rowIndex) => {
+        row.map((value, index) => {
+          if (value === ".") {
+            var columnArray = [];
+            rowArray.map((valuer) => {
+              columnArray.push(valuer[index]);
+            });
+            // console.log("columnarray", columnArray);
+            var solArray = [];
+            for (var i = 1; i < 10; i++) {
+              if (
+                this.checkColPlacement("ks", "row", columnArray, i + "") &&
+                this.checkRowPlacement("kfsf", row, columnArray, i + "") &&
+                this.checkRegionPlacement(rowArray, rowIndex, index, i + "")
+              ) {
+                // console.log(i);
+                // row[index] = i + "";
+                // break;
+                solArray.push(i + "");
+              }
+            }
+
+            // console.log("solArray", solArray);
+            if (solArray.length == 1) {
+              row[index] = solArray[0];
+            }
+
+            solArray = [];
+          }
+        });
+      });
+    }
+
+    // console.log("index", stillDot());
+    // console.log(rowArray);
     return rowArray;
   }
 }
